@@ -10,6 +10,10 @@ import kotlinx.android.synthetic.main.activity_add_thought.*
 
 class AddThoughtActivity : AppCompatActivity() {
     val TAG: String? = AddThoughtActivity::class.java.name
+
+    // TODO: refactor this to use KOTLIN ENUM Classes
+    // https://kotlinlang.org/docs/reference/enum-classes.html
+
     var selectedCategory = FUNNY
 
     override fun onCreate(savedInstanceState: Bundle?)
@@ -20,7 +24,7 @@ class AddThoughtActivity : AppCompatActivity() {
 
     fun addPostClicked(view:View)
     {
-        // add post Firestore!
+        // this adds a post to Firestore!
         val data = HashMap<String, Any>()
         data.put(CATEGORY, selectedCategory)
         data.put(NUM_COMMENTS, 0)

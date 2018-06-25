@@ -20,10 +20,10 @@ import kotlinx.android.synthetic.main.content_main.*
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
-    val TAG: String? = MainActivity::class.java.name
+    private val TAG: String? = MainActivity::class.java.name
     var selectedCategory = FUNNY
     lateinit var thoughtsAdapter: ThoughtsAdapter
-    val thoughts = arrayListOf<Thought>()
+    private val thoughts = arrayListOf<Thought>()
 
     lateinit var firestore : FirebaseFirestore
     lateinit var settings : FirebaseFirestoreSettings
@@ -40,8 +40,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-
-        fab.setOnClickListener { view ->
+        fab.setOnClickListener { _ ->
             val addThoughtActivity = Intent(this, AddThoughtActivity::class.java)
             startActivity(addThoughtActivity)
         }
@@ -64,10 +63,12 @@ class MainActivity : AppCompatActivity() {
                         val newThought = Thought(name, timestamp, thoughtTxt, numLikes.toInt(), numComments.toInt(), documentId)
                         thoughts.add(newThought)
                     }
-                }
-                .addOnFailureListener { exception ->
-                    Log.e(TAG, "Could not add post: $exception")
-                }
+            // reload the recycler view once the data has been loaded into the list of thoughts
+            thoughtsAdapter.notifyDataSetChanged()
+            }
+            .addOnFailureListener { exception ->
+                Log.e(TAG, "Could not add post: $exception")
+            }
     }
 
     fun mainFunnyClicked(view: View){

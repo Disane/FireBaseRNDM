@@ -9,7 +9,7 @@ import android.widget.TextView
 import java.text.SimpleDateFormat
 import java.util.*
 
-class ThoughtsAdapter(val thoughts: ArrayList<Thought>): RecyclerView.Adapter<ThoughtsAdapter.ViewHolder>()
+class ThoughtsAdapter(private val thoughts: ArrayList<Thought>): RecyclerView.Adapter<ThoughtsAdapter.ViewHolder>()
 {
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bindThought(thoughts[position])
@@ -25,11 +25,11 @@ class ThoughtsAdapter(val thoughts: ArrayList<Thought>): RecyclerView.Adapter<Th
     }
 
     inner class ViewHolder(itemView: View?) : RecyclerView.ViewHolder(itemView){
-        val userName = itemView?.findViewById<TextView>(R.id.listViewUserName)
-        val timeStamp = itemView?.findViewById<TextView>(R.id.listViewTimeStamp)
-        val thoughtTxt = itemView?.findViewById<TextView>(R.id.listViewThoughtTxt)
-        val numLikes = itemView?.findViewById<TextView>(R.id.listViewNumLikesLbl)
-        val likesImage = itemView?.findViewById<ImageView>(R.id.listViewLikesImg)
+        private val userName = itemView?.findViewById<TextView>(R.id.listViewUserName)
+        private val timeStamp = itemView?.findViewById<TextView>(R.id.listViewTimeStamp)
+        private val thoughtTxt = itemView?.findViewById<TextView>(R.id.listViewThoughtTxt)
+        private val numLikes = itemView?.findViewById<TextView>(R.id.listViewNumLikesLbl)
+        private val likesImage = itemView?.findViewById<ImageView>(R.id.listViewLikesImg)
 
         fun bindThought(thought: Thought)
         {
@@ -38,10 +38,9 @@ class ThoughtsAdapter(val thoughts: ArrayList<Thought>): RecyclerView.Adapter<Th
             numLikes?.text = thought.numLikes.toString()
 
             val dateFormatter = SimpleDateFormat("MMM d, h:mm a", Locale.getDefault())
-            val dateString = dateFormatter.format(thought.timestamp)
+            val dateData = thought.timestamp.toDate();
+            val dateString = dateFormatter.format(dateData)
             timeStamp?.text = dateString
-
-
         }
     }
 }
