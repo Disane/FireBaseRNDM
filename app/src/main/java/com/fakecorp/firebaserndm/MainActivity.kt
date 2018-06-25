@@ -2,20 +2,15 @@ package com.fakecorp.firebaserndm
 
 import android.content.Intent
 import android.os.Bundle
-import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
-import android.view.Menu
-import android.view.MenuItem
 import android.view.View
-import com.google.firebase.FirebaseApp
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.*
 
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
-import java.util.*
 
 class MainActivity : AppCompatActivity() {
     private val TAG: String? = MainActivity::class.java.name
@@ -67,33 +62,7 @@ class MainActivity : AppCompatActivity() {
                             Log.e(TAG, "Could not retrieve documents: $exception")
                         }
                         if (snapshot != null) {
-                            // clear before updating the list
-                            thoughts.clear()
-
-                            // update list of thoughts
-                            for (document in snapshot.documents) {
-                                val data = document.data
-                                if (data!![USERNAME] != null &&
-                                    data[TIMESTAMP] != null &&
-                                    data[THOUGHT_TXT] != null &&
-                                    data[NUM_LIKES] != null &&
-                                    data[NUM_COMMENTS] != null) {
-                                    val name = data!![USERNAME] as String
-                                    val timestamp = data[TIMESTAMP] as Timestamp
-                                    val thoughtTxt = data[THOUGHT_TXT] as String
-                                    val numLikes = data[NUM_LIKES] as Long
-                                    val numComments = data[NUM_COMMENTS] as Long
-                                    val documentId = document.id
-
-                                    val newThought = Thought(name, timestamp, thoughtTxt, numLikes.toInt(), numComments.toInt(), documentId)
-                                    thoughts.add(newThought)
-                                }
-                                else {
-                                    Log.e(TAG, "Could not retrieve data because one of its elements was null!")
-                                }
-                            }
-                            // reload the recycler view once the data has been loaded into the list of thoughts
-                            thoughtsAdapter.notifyDataSetChanged()
+                           parseData(snapshot)
                         }
                     }
         }
@@ -106,36 +75,41 @@ class MainActivity : AppCompatActivity() {
                             Log.e(TAG, "Could not retrieve documents: $exception")
                         }
                         if (snapshot != null) {
-                            // clear before updating the list
-                            thoughts.clear()
-
-                            // update list of thoughts
-                            for (document in snapshot.documents) {
-                                val data = document.data
-                                if (data!![USERNAME] != null &&
-                                    data[TIMESTAMP] != null &&
-                                    data[THOUGHT_TXT] != null &&
-                                    data[NUM_LIKES] != null &&
-                                    data[NUM_COMMENTS] != null) {
-                                    val name = data!![USERNAME] as String
-                                    val timestamp = data[TIMESTAMP] as Timestamp
-                                    val thoughtTxt = data[THOUGHT_TXT] as String
-                                    val numLikes = data[NUM_LIKES] as Long
-                                    val numComments = data[NUM_COMMENTS] as Long
-                                    val documentId = document.id
-
-                                    val newThought = Thought(name, timestamp, thoughtTxt, numLikes.toInt(), numComments.toInt(), documentId)
-                                    thoughts.add(newThought)
-                                }
-                                else {
-                                    Log.e(TAG, "Could not retrieve data because one of its elements was null!")
-                                }
-                            }
-                            // reload the recycler view once the data has been loaded into the list of thoughts
-                            thoughtsAdapter.notifyDataSetChanged()
+                           parseData(snapshot)
                         }
                     }
         }
+    }
+
+    fun parseData(snapshot: QuerySnapshot)
+    {
+        // clear before updating the list
+        thoughts.clear()
+
+        // update list of thoughts
+        for (document in snapshot.documents) {
+            val data = document.data
+            if (data!![USERNAME] != null &&
+                data[TIMESTAMP] != null &&
+                data[THOUGHT_TXT] != null &&
+                data[NUM_LIKES] != null &&
+                data[NUM_COMMENTS] != null) {
+                val name = data!![USERNAME] as String
+                val timestamp = data[TIMESTAMP] as Timestamp
+                val thoughtTxt = data[THOUGHT_TXT] as String
+                val numLikes = data[NUM_LIKES] as Long
+                val numComments = data[NUM_COMMENTS] as Long
+                val documentId = document.id
+
+                val newThought = Thought(name, timestamp, thoughtTxt, numLikes.toInt(), numComments.toInt(), documentId)
+                thoughts.add(newThought)
+            }
+            else {
+                Log.e(TAG, "Could not retrieve data because one of its elements was null!")
+            }
+        }
+        // reload the recycler view once the data has been loaded into the list of thoughts
+        thoughtsAdapter.notifyDataSetChanged()
     }
 
     fun mainFunnyClicked(view: View){
