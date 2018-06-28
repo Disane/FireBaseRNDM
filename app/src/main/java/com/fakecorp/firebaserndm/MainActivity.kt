@@ -5,8 +5,12 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
+import android.widget.Toast
 import com.google.firebase.Timestamp
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.*
 
 import kotlinx.android.synthetic.main.activity_main.*
@@ -23,6 +27,8 @@ class MainActivity : AppCompatActivity() {
 
     lateinit var firestore: FirebaseFirestore
     lateinit var settings: FirebaseFirestoreSettings
+
+    lateinit var auth: FirebaseAuth
 
 
     lateinit var thoughtsCollectionRef: CollectionReference
@@ -45,11 +51,71 @@ class MainActivity : AppCompatActivity() {
         thoughtListView.adapter = thoughtsAdapter
         val layouManager = LinearLayoutManager(this)
         thoughtListView.layoutManager = layouManager
+
+        auth = FirebaseAuth.getInstance()
     }
 
     override fun onResume() {
         super.onResume()
-        setListener()
+        updateUI()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu, menu)
+        return true
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+        val menuItem = menu?.getItem(0)
+        if(auth.currentUser == null) {
+            // logged out state
+            menuItem?.title = "Login"
+        }
+        else {
+            // logged in
+            menuItem?.title = "Logout"
+        }
+        return super.onPrepareOptionsMenu(menu)
+    }
+
+    fun updateUI(){
+        if(auth.currentUser == null){
+            Toast.makeText(this,"You are now signed out!", Toast.LENGTH_LONG).show()
+            // disable all buttons
+            mainCrazyBtn.isEnabled = false
+            mainPopularBtn.isEnabled = false
+            mainFunnyBtn.isEnabled = false
+            mainSeriousBtn.isEnabled = false
+            fab.isEnabled = false
+            // clear the list of thoughts
+            thoughts.clear()
+            // notify the recyclerView that the list has been cleared
+            thoughtsAdapter.notifyDataSetChanged()
+        }
+        else{
+            Toast.makeText(this,"You are now signed in!", Toast.LENGTH_LONG).show()
+            // disable all buttons
+            mainCrazyBtn.isEnabled = true
+            mainPopularBtn.isEnabled = true
+            mainFunnyBtn.isEnabled = true
+            mainSeriousBtn.isEnabled = true
+            fab.isEnabled = true
+            setListener()
+        }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        if(item?.itemId == R.id.action_login) {
+            if(auth.currentUser == null) {
+                val loginIntent = Intent(this, LoginActivity::class.java)
+                startActivity(loginIntent)
+            } else {
+                auth.signOut()
+                updateUI()
+            }
+            return true
+        }
+        return false
     }
 
     fun setListener()
