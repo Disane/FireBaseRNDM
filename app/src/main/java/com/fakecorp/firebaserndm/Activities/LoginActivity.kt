@@ -1,10 +1,11 @@
-package com.fakecorp.firebaserndm
+package com.fakecorp.firebaserndm.Activities
 
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import com.fakecorp.firebaserndm.R
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_login.*
 

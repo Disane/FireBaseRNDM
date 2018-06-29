@@ -47,7 +47,7 @@
         android:id="@+id/listViewNumLikesLbl"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="28dp"
+        android:layout_marginStart="8dp"
         android:textColor="@color/colorPrimary"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="@+id/listViewLikesImg"
@@ -66,4 +66,24 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/listViewThoughtTxt"
         app:srcCompat="@drawable/star_icon_filled" />
+
+    <ImageView
+        android:id="@+id/listViewCommentsImg"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/listViewNumLikesLbl"
+        app:layout_constraintStart_toEndOf="@+id/listViewNumLikesLbl"
+        app:layout_constraintTop_toTopOf="@+id/listViewNumLikesLbl"
+        app:srcCompat="@drawable/commenticon" />
+
+    <TextView
+        android:id="@+id/listViewNumCommentsLbl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/listViewCommentsImg"
+        app:layout_constraintStart_toEndOf="@+id/listViewCommentsImg"
+        app:layout_constraintTop_toTopOf="@+id/listViewCommentsImg"
+        tools:text="99" />
 </android.support.constraint.ConstraintLayout>

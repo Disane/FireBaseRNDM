@@ -1,4 +1,4 @@
-package com.fakecorp.firebaserndm
+package com.fakecorp.firebaserndm.Activities
 
 import android.content.Intent
 import android.os.Bundle
@@ -9,6 +9,10 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
+import com.fakecorp.firebaserndm.Adapters.ThoughtsAdapter
+import com.fakecorp.firebaserndm.Model.Thought
+import com.fakecorp.firebaserndm.R
+import com.fakecorp.firebaserndm.Utilities.*
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.*
@@ -47,7 +51,11 @@ class MainActivity : AppCompatActivity() {
             startActivity(addThoughtActivity)
         }
 
-        thoughtsAdapter = ThoughtsAdapter(thoughts)
+        thoughtsAdapter = ThoughtsAdapter(thoughts){ thought ->
+            val commentsActivity = Intent(this, CommentsActivity::class.java)
+            commentsActivity.putExtra(DOCUMENT_KEY, thought.documentId)
+            startActivity(commentsActivity)
+        }
         thoughtListView.adapter = thoughtsAdapter
         val layouManager = LinearLayoutManager(this)
         thoughtListView.layoutManager = layouManager
@@ -171,7 +179,7 @@ class MainActivity : AppCompatActivity() {
                 thoughts.add(newThought)
             }
             else {
-                Log.e(TAG, "Could not retrieve data because one of its elements was null!")
+                Log.e(TAG, "Could not retrieve thought data because one of its elements was null!")
             }
         }
         // reload the recycler view once the data has been loaded into the list of thoughts

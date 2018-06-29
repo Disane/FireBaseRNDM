@@ -1,9 +1,12 @@
-package com.fakecorp.firebaserndm
+package com.fakecorp.firebaserndm.Activities
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import com.fakecorp.firebaserndm.*
+import com.fakecorp.firebaserndm.Utilities.*
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.activity_add_thought.*
@@ -26,12 +29,12 @@ class AddThoughtActivity : AppCompatActivity() {
     {
         // this adds a post to Firestore!
         val data = HashMap<String, Any>()
-        data.put(CATEGORY, selectedCategory)
-        data.put(NUM_COMMENTS, 0)
-        data.put(NUM_LIKES, 0)
-        data.put(THOUGHT_TXT, addThoughtTxt.text.toString())
-        data.put(TIMESTAMP, FieldValue.serverTimestamp())
-        data.put(USERNAME, addUserNameTxt.text.toString())
+        data[CATEGORY] = selectedCategory
+        data[NUM_COMMENTS] = 0
+        data[NUM_LIKES] = 0
+        data[THOUGHT_TXT] = addThoughtTxt.text.toString()
+        data[TIMESTAMP] = FieldValue.serverTimestamp()
+        data[USERNAME] = FirebaseAuth.getInstance().currentUser?.displayName.toString()
         FirebaseFirestore.getInstance().collection(THOUGHTS_REF)
                 .add(data)
                 .addOnSuccessListener{_ ->

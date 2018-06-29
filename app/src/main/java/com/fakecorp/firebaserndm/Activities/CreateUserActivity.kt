@@ -1,9 +1,13 @@
-package com.fakecorp.firebaserndm
+package com.fakecorp.firebaserndm.Activities
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import com.fakecorp.firebaserndm.Utilities.DATE_CREATED
+import com.fakecorp.firebaserndm.R
+import com.fakecorp.firebaserndm.Utilities.USERNAME
+import com.fakecorp.firebaserndm.Utilities.USERS_REF
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.firestore.FieldValue
@@ -39,8 +43,8 @@ class CreateUserActivity : AppCompatActivity() {
                                 Log.e(TAG, "Could not update display name: ${exception.localizedMessage}")
                             }
                     val data = HashMap<String, Any>()
-                    data.put(USERNAME, username) // TODO: try and replace this with data[USERNAME] = username
-                    data.put(DATE_CREATED, FieldValue.serverTimestamp())
+                    data[USERNAME] = username // TODO: try and replace this with data[USERNAME] = username
+                    data[DATE_CREATED] = FieldValue.serverTimestamp()
 
                     FirebaseFirestore.getInstance().collection(USERS_REF).document(result.user.uid)
                             .set(data)

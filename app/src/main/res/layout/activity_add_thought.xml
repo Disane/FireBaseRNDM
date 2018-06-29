@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".AddThoughtActivity">
+    tools:context=".Activities.AddThoughtActivity">
 
     <Button
         android:id="@+id/addPostBtn"
@@ -19,22 +19,6 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/addThoughtTxt" />
-
-    <EditText
-        android:id="@+id/addUserNameTxt"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="24dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="8dp"
-        android:ems="10"
-        android:hint="User Name"
-        android:inputType="textPersonName"
-        android:textColor="@color/colorPrimary"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/addSeriousBtn" />
 
     <ToggleButton
         android:id="@+id/addFunnyBtn"
@@ -95,7 +79,7 @@
         android:layout_height="147dp"
         android:layout_marginEnd="24dp"
         android:layout_marginStart="24dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
         android:ems="10"
         android:gravity="top"
         android:hint="my random thought"
@@ -105,5 +89,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/addUserNameTxt" />
+        app:layout_constraintTop_toBottomOf="@+id/addSeriousBtn" />
 </android.support.constraint.ConstraintLayout>
