@@ -10,6 +10,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import com.fakecorp.firebaserndm.Adapters.ThoughtsAdapter
+import com.fakecorp.firebaserndm.Interfaces.ThoughtOptionsClickListener
 import com.fakecorp.firebaserndm.Model.Thought
 import com.fakecorp.firebaserndm.R
 import com.fakecorp.firebaserndm.Utilities.*
@@ -20,7 +21,8 @@ import com.google.firebase.firestore.*
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), ThoughtOptionsClickListener {
+
     private val TAG: String? = MainActivity::class.java.name
     // TODO: refactor this to use KOTLIN ENUM Classes
     // https://kotlinlang.org/docs/reference/enum-classes.html
@@ -51,7 +53,7 @@ class MainActivity : AppCompatActivity() {
             startActivity(addThoughtActivity)
         }
 
-        thoughtsAdapter = ThoughtsAdapter(thoughts){ thought ->
+        thoughtsAdapter = ThoughtsAdapter(thoughts, this){ thought ->
             val commentsActivity = Intent(this, CommentsActivity::class.java)
             commentsActivity.putExtra(DOCUMENT_KEY, thought.documentId)
             startActivity(commentsActivity)
@@ -84,6 +86,10 @@ class MainActivity : AppCompatActivity() {
             menuItem?.title = "Logout"
         }
         return super.onPrepareOptionsMenu(menu)
+    }
+
+    override fun thoughtOptionsMenuClicked(thought: Thought) {
+        // invoke Alert Dialog
     }
 
     fun updateUI(){
@@ -167,15 +173,17 @@ class MainActivity : AppCompatActivity() {
                 data[TIMESTAMP] != null &&
                 data[THOUGHT_TXT] != null &&
                 data[NUM_LIKES] != null &&
-                data[NUM_COMMENTS] != null) {
+                data[NUM_COMMENTS] != null &&
+                data[USER_ID] != null) {
                 val name = data!![USERNAME] as String
                 val timestamp = data[TIMESTAMP] as Timestamp
                 val thoughtTxt = data[THOUGHT_TXT] as String
                 val numLikes = data[NUM_LIKES] as Long
                 val numComments = data[NUM_COMMENTS] as Long
                 val documentId = document.id
+                val userId = data[USER_ID] as String
 
-                val newThought = Thought(name, timestamp, thoughtTxt, numLikes.toInt(), numComments.toInt(), documentId)
+                val newThought = Thought(name, timestamp, thoughtTxt, numLikes.toInt(), numComments.toInt(), documentId, userId)
                 thoughts.add(newThought)
             }
             else {

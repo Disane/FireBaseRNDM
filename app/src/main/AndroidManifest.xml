@@ -21,7 +21,8 @@
         <activity android:name=".Activities.AddThoughtActivity" />
         <activity android:name=".Activities.LoginActivity" />
         <activity android:name=".Activities.CreateUserActivity" />
-        <activity android:name=".Activities.CommentsActivity"></activity>
+        <activity android:name=".Activities.CommentsActivity" />
+        <activity android:name=".Activities.UpdateCommentActivity"></activity>
     </application>
 
 </manifest>

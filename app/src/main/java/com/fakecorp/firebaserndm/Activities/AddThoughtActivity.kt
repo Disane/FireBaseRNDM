@@ -35,6 +35,8 @@ class AddThoughtActivity : AppCompatActivity() {
         data[THOUGHT_TXT] = addThoughtTxt.text.toString()
         data[TIMESTAMP] = FieldValue.serverTimestamp()
         data[USERNAME] = FirebaseAuth.getInstance().currentUser?.displayName.toString()
+        data[USER_ID] = FirebaseAuth.getInstance().currentUser?.uid as String
+
         FirebaseFirestore.getInstance().collection(THOUGHTS_REF)
                 .add(data)
                 .addOnSuccessListener{_ ->
