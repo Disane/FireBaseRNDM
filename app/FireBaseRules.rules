@@ -1,0 +1,40 @@
+// These are the rules setup for the FireBaseRNDM Project
+// to protect user data on FireStore servers
+// This prevents anonnymous users from creating, editing, deleting usre data that doesn't belong to them
+//
+// Boilerplate code to request use of firestore
+service cloud.firestore
+{
+	// affect documents inside databases
+  match /databases/{database}/documents
+  {
+  	// create rules for thoughts document type
+    match /thoughts/{thought}
+    {
+    	// set rule to read and write (create, delete and update) thoughts
+      allow read, write : if request.auth != null;
+    }
+    // create rules for comment document type
+    match /comments/{comments}
+    {
+      allow read : if request.auth != null;
+      allow create : if request.auth != null;
+      // request - request data that comes from the client
+      // resource - already existing data on the database
+      // resource.data.userId - resourceId in the cloud, unique per user and per FireBase Project
+      // resource.data.username - data provided by the client to the server
+      // request.resource.data.username - data sitting on the cloud already
+      // username - holds the logged in user name (email address)
+      allow delete : if request.auth.uid == resource.data.userId
+                    || get(/databases/$(database)/documents/comments/$(comment)).data.userId;
+      allow update : if request.auth.uid == resource.data.userId
+                    && request.resource.data.username == resource.data.username;
+    }
+    match /users/{userId}
+    {
+      allow create;
+      // only allow logged in users to read and write (delete and update) user entries
+      allow read, write: if request.auth.id == user.Id;
+    }
+  }
+}

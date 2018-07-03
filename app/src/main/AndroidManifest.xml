@@ -22,7 +22,8 @@
         <activity android:name=".Activities.LoginActivity" />
         <activity android:name=".Activities.CreateUserActivity" />
         <activity android:name=".Activities.CommentsActivity" />
-        <activity android:name=".Activities.UpdateCommentActivity"></activity>
+        <activity android:name=".Activities.UpdateCommentActivity" />
+        <activity android:name=".Activities.UpdateThoughtActivity"></activity>
     </application>
 
 </manifest>

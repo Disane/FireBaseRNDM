@@ -2,12 +2,14 @@ package com.fakecorp.firebaserndm.Activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.Button
 import android.widget.Toast
 import com.fakecorp.firebaserndm.Adapters.ThoughtsAdapter
 import com.fakecorp.firebaserndm.Interfaces.ThoughtOptionsClickListener
@@ -20,24 +22,23 @@ import com.google.firebase.firestore.*
 
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
-
 class MainActivity : AppCompatActivity(), ThoughtOptionsClickListener {
 
     private val TAG: String? = MainActivity::class.java.name
     // TODO: refactor this to use KOTLIN ENUM Classes
     // https://kotlinlang.org/docs/reference/enum-classes.html
-    var selectedCategory = FUNNY
-    lateinit var thoughtsAdapter: ThoughtsAdapter
+    private var selectedCategory = FUNNY
+    private lateinit var thoughtsAdapter: ThoughtsAdapter
     private val thoughts = arrayListOf<Thought>()
-    lateinit var thoughtsListener: ListenerRegistration
+    private lateinit var thoughtsListener: ListenerRegistration
 
-    lateinit var firestore: FirebaseFirestore
-    lateinit var settings: FirebaseFirestoreSettings
+    private lateinit var firestore: FirebaseFirestore
+    private lateinit var settings: FirebaseFirestoreSettings
 
     lateinit var auth: FirebaseAuth
 
 
-    lateinit var thoughtsCollectionRef: CollectionReference
+    private lateinit var thoughtsCollectionRef: CollectionReference
 
     override fun onCreate(savedInstanceState: Bundle?) {
         firestore = FirebaseFirestore.getInstance()
@@ -90,9 +91,65 @@ class MainActivity : AppCompatActivity(), ThoughtOptionsClickListener {
 
     override fun thoughtOptionsMenuClicked(thought: Thought) {
         // invoke Alert Dialog
+        // This is where w present alert dialog
+        val builder = AlertDialog.Builder(this)
+        val dialogView = layoutInflater.inflate(R.layout.options_menu, null)
+        val deleteBtn = dialogView.findViewById<Button>(R.id.optionDeleteBtn)
+        val editBtn = dialogView.findViewById<Button>(R.id.optionEditBtn)
+
+        builder.setView(dialogView)
+                .setNegativeButton("Cancel"){_, _ -> }
+        val ad = builder.show()
+
+        deleteBtn.setOnClickListener {
+            val thoughtRef = FirebaseFirestore.getInstance().collection(THOUGHTS_REF).document(thought.documentId)
+            val collectionRef = FirebaseFirestore.getInstance().collection(THOUGHTS_REF).document(thought.documentId)
+                    .collection(COMMENTS_REF)
+            deleteCollection(collectionRef, thought){ success ->
+                if(success)
+                {
+                    thoughtRef.delete().addOnSuccessListener {
+                        ad.dismiss()
+                    }
+                    .addOnFailureListener{ exception ->
+                        Log.e(TAG, "Could not delete thought: ${exception.localizedMessage}")
+                    }
+                }
+            }
+        }
+        editBtn.setOnClickListener{
+            // edit the comment by invoking UpdateThoughtActivity
+            val updateIntent = Intent(this, UpdateThoughtActivity::class.java)
+            updateIntent.putExtra(THOUGHT_DOC_ID_EXTRA, thought.documentId)
+            updateIntent.putExtra(THOUGHT_TXT, thought.thoughtTxt)
+            ad.dismiss()
+            startActivity(updateIntent)
+        }
     }
 
-    fun updateUI(){
+    private fun deleteCollection(collection: CollectionReference, thought: Thought, complete:(Boolean) -> Unit){
+        collection.get().addOnSuccessListener { snapshot ->
+            val batch = FirebaseFirestore.getInstance().batch()
+            for(document in snapshot){
+                val docRef = FirebaseFirestore.getInstance().collection(THOUGHTS_REF).document(thought.documentId)
+                        .collection(COMMENTS_REF).document(document.id)
+                batch.delete(docRef)
+            }
+            batch.commit()
+                    .addOnSuccessListener {
+                        complete(true)
+                    }
+                    .addOnFailureListener{exception ->
+                        Log.e(TAG, "Could not delete delete subcollection: ${exception.localizedMessage}")
+                    }
+        }.addOnFailureListener { exception ->
+            Log.e(TAG, "Could not retrieve documents: ${exception.localizedMessage}")
+        }
+    }
+
+
+
+    private fun updateUI(){
         if(auth.currentUser == null){
             Toast.makeText(this,"You are now signed out!", Toast.LENGTH_LONG).show()
             // disable all buttons
@@ -132,7 +189,7 @@ class MainActivity : AppCompatActivity(), ThoughtOptionsClickListener {
         return false
     }
 
-    fun setListener()
+    private fun setListener()
     {
         if (selectedCategory == POPULAR){
             thoughtsListener = thoughtsCollectionRef
@@ -161,7 +218,7 @@ class MainActivity : AppCompatActivity(), ThoughtOptionsClickListener {
         }
     }
 
-    fun parseData(snapshot: QuerySnapshot)
+    private fun parseData(snapshot: QuerySnapshot)
     {
         // clear before updating the list
         thoughts.clear()
@@ -254,5 +311,4 @@ class MainActivity : AppCompatActivity(), ThoughtOptionsClickListener {
         thoughtsListener.remove()
         setListener()
     }
-
 }
